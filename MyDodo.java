@@ -160,6 +160,9 @@ public class MyDodo extends Dodo
      */
     
     public boolean grainAhead() {
+        if (!canMove()) {
+             return false;
+        }
         move(); // Step 1: move forward to check the cell ahead
         
         boolean grainFound = onGrain(); // Step 2: check if grain is present
