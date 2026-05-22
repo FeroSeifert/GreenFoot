@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=BlueEgg
+comment0.text=\r\n\ @author\ Sjaak\ Smetsers\ &\ Renske\ Smetsers-Weeda\ @version\ 3.0\ --\ 01-01-2017\r\n
+comment1.params=
+comment1.target=BlueEgg()
+comment1.text=\r\n\ \r\n
+comment2.params=
+comment2.target=boolean\ hasABlueEgg()
+comment2.text=\r\n\ \r\n
+comment3.params=x\ y
+comment3.target=void\ setLocation(int,\ int)
+comment3.text=\r\n\ \r\n
+numComments=4
