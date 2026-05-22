@@ -223,4 +223,59 @@ public class MyDodo extends Dodo
             }
         }
     }
+    
+    public void fillEmptyNestToWorldEdge() {
+        while (!borderAhead()) {
+             if (onNest() && canLayEgg()) {
+                layEgg();
+            }
+            
+            move();
+        }
+        
+        if (onNest() && canLayEgg()) {
+            layEgg();
+        }
+    }
+    
+    public void walkToNestClimbingOverFences() {
+        while (!onNest()) {
+            if (borderAhead()) {
+            showError("No nest found before world edge!");
+            return;
+            }
+
+            if (fenceAhead()) {
+            climbOverFence();
+            } else {
+            move();
+            }
+        }
+
+        if (canLayEgg()) {
+        layEgg();
+        } else {
+        showError("There is already an egg in this nest");
+        }
+    }
+    
+    public void walkAroundFencedArea() {
+        while (!onEgg()) {
+            turnRight();
+                
+            if (canMove()) {
+                move();
+                continue;
+            }
+                
+            turnLeft();
+            
+            if (canMove()) {
+                move();
+                continue;
+            }
+                
+            turnLeft();
+        }
+    }
 }
