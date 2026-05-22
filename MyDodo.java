@@ -177,6 +177,10 @@ public class MyDodo extends Dodo
     
     public boolean gotoEgg() {
         while (!onEgg()) {
+            if (!canMove()) {
+                showError("I'm stuck!");
+                return false;
+            }
             move();
         }
         return true;
