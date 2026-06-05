@@ -15,6 +15,8 @@ public class MyDodo extends Dodo
     }
 
     public void act() {
+        System.out.println("Mimi staat op: " + getX() + ", " + getY());
+
     }
 
     /**
@@ -471,5 +473,107 @@ public class MyDodo extends Dodo
         System.out.println("Blauw: " + waardeBlauweEi);
         System.out.println("Goud: " + waardeGoudenEi);
         System.out.println("Tijdelijk: " + tijdelijkeWaardeEi);
+    }
+
+    /**
+     * 
+     */
+    
+    public boolean locationReached(int x, int y) {
+        return getX() == x && getY() == y;
+    }
+    
+    public void faceEast() {
+        while (getDirection() != EAST) {
+            turnRight();
+        }
+    }
+
+    public void faceWest() {
+        while (getDirection() != WEST) {
+            turnRight();
+        }
+    }
+
+    public void faceNorth() {
+        while (getDirection() != NORTH) {
+            turnRight();
+        }
+    }
+
+    public void faceSouth() {
+        while (getDirection() != SOUTH) {
+        turnRight();
+        }
+    }
+    
+    public void goToLocation(int targetX, int targetY) {
+        while (getX() != targetX) {
+            if (getX() < targetX) {
+                faceEast();
+            } else {
+                faceWest();
+            }
+
+            if (!canMove()) {
+                showError("Obstacle while moving in X direction");
+                return;
+            }
+
+            move();
+        }
+        
+        while (getY() != targetY) {
+            if (getY() < targetY) {
+                faceSouth();
+            } else {
+                faceNorth();
+            }
+
+            if (!canMove()) {
+                showError("Obstacle while moving in Y direction");
+                return;
+            }
+
+            move();
+        
+        }
+    }
+    
+    public boolean validCoordinates(int x, int y) {
+        int worldWidth = getWorld().getWidth();
+        int worldHeight = getWorld().getHeight();
+
+        boolean valid = (x >= 0 && x < worldWidth) &&
+                        (y >= 0 && y < worldHeight);
+
+        if (!valid) {
+            showError("Invalid coordinates");
+        }
+
+        return valid;
+    }
+    
+    public int countEggsInRow() {
+        int count = 0;
+
+        // Tel ei op startpositie
+        if (onEgg()) {
+            count++;
+        }
+
+        // Loop tot wereldrand
+        while (!borderAhead()) {
+            move();
+
+            if (onEgg()) {
+                count++;
+            }
+        }
+
+        // Ga terug naar startpositie
+        goBackToStartOfRowAndFaceBack();
+
+        return count;
     }
 }
