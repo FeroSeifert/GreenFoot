@@ -298,6 +298,10 @@ public class MyDodo extends Dodo
         }
     }    
     
+    /**
+     * 
+     */
+    
     public boolean eggAhead() {
         if (!canMove()) {
             return false;
@@ -311,6 +315,10 @@ public class MyDodo extends Dodo
 
         return found;
     }
+    
+    /**
+     * 
+     */
     
     public boolean nestAhead() {
         if (!canMove()) {
@@ -326,8 +334,11 @@ public class MyDodo extends Dodo
         return found;
     }
     
+    /**
+     * 
+     */
+    
     public void followEggTrail() {
-
         if (eggAhead()) {
             move();
             return;
@@ -354,6 +365,7 @@ public class MyDodo extends Dodo
     /**
      * 
      */
+    
     public void eggTrailToNest() {
         while (!onNest()) {
             if (onEgg()) {
@@ -369,6 +381,10 @@ public class MyDodo extends Dodo
         }
     }  
     
+    /**
+     * 
+     */
+    
     public boolean wallOnRight() {
         turnRight();
         boolean wall = fenceAhead() || borderAhead();
@@ -376,6 +392,10 @@ public class MyDodo extends Dodo
         return wall;
     }
 
+    /**
+     * 
+     */
+    
     public boolean wallOnLeft() {
         turnLeft();
         boolean wall = fenceAhead() || borderAhead();
@@ -383,6 +403,10 @@ public class MyDodo extends Dodo
         return wall;
     }
 
+    /**
+     * 
+     */
+    
     public boolean canMoveRight() {
         turnRight();
         boolean can = canMove();
@@ -390,6 +414,10 @@ public class MyDodo extends Dodo
         return can;
     }
 
+    /**
+     * 
+     */
+    
     public boolean canMoveLeft() {
         turnLeft();
         boolean can = canMove();
@@ -397,34 +425,51 @@ public class MyDodo extends Dodo
         return can;
     }
 
+    /**
+     * 
+     */
+    
     public void walkMazeToNest() {
-        // Pre: start in the only possible direction
         while (!onNest()) {
-            // 1. If there is no wall on the right and we can move there: turn right and go
             if (!wallOnRight() && canMoveRight()) {
                 turnRight();
                 move();
             }
-                // 2. Else if we can move forward: go straight
             else if (canMove()) {
                 move();
             }
-                // 3. Else if we can move left: turn left and go
             else if (canMoveLeft()) {
                 turnLeft();
                 move();
             }
-                // 4. Else: turn around (should not really happen with given constraints)
                 else {
                 turn180();
             }
         }
 
-        // At nest: lay egg if possible
         if (canLayEgg()) {
             layEgg();
         } else {
             showError("There is already an egg in this nest");
         }
+    }
+    
+    /**
+     * 
+     */
+    
+    public void testSwap() {
+        int waardeBlauweEi = 2;
+        int waardeGoudenEi = 10;
+
+        int tijdelijkeWaardeEi;
+
+        tijdelijkeWaardeEi = waardeBlauweEi;
+        waardeBlauweEi = waardeGoudenEi;
+        waardeGoudenEi = tijdelijkeWaardeEi;
+
+        System.out.println("Blauw: " + waardeBlauweEi);
+        System.out.println("Goud: " + waardeGoudenEi);
+        System.out.println("Tijdelijk: " + tijdelijkeWaardeEi);
     }
 }
