@@ -288,101 +288,143 @@ public class MyDodo extends Dodo
             }
                 
             turnLeft();   
-            
+        
             if (canMove()) {
                 move();
                 continue;
             }
-                
+                    
             turnLeft();
         }
+    }    
+    
+    public boolean eggAhead() {
+        if (!canMove()) {
+            return false;
+        }
+
+        move();
+        boolean found = onEgg();
+        turn180();
+        move();
+        turn180();
+
+        return found;
     }
     
-    /**
-     * helper for eggTrailToNest
-     */
-    
-        public boolean eggInFront() {
-            return eggAhead();
+    public boolean nestAhead() {
+        if (!canMove()) {
+        return false;
+        }
+
+        move();
+        boolean found = onNest();
+        turn180();
+        move();
+        turn180();
+
+        return found;
     }
-
-    /**
-     * helper for eggTrailToNest
-     */
     
-        public boolean eggToLeft() {
-            turnLeft();
-            boolean found = eggAhead();
-            turnRight();
-            return found;
-    }
+    public void followEggTrail() {
 
-    /**
-     * helper for eggTrailToNest
-     */
-    
-        public boolean eggToRight() {
-            turnRight();
-            boolean found = eggAhead();
-            turnLeft();
-            return found;
-    }
-
-    /**
-     * helper for eggTrailToNest
-     */
-    
-        public boolean eggAhead() {
-            if (!canMove()) return false;
-
+        if (eggAhead()) {
             move();
-            boolean found = onEgg();
-            turn180();
-            move();
-            turn180();
+            return;
+        }
 
-            return found;
+        turnRight();
+
+        if (eggAhead()) {
+            move();
+            return;
+        }
+
+        turnLeft();
+        turnLeft();
+
+        if (eggAhead()) {
+            move();
+            return;
+        }
+
+        showError("Geen volgend ei gevonden");
     }
 
     /**
-     * Follows an egg trail till theres a nest
+     * 
      */
-    
-        public void eggTrailToNest() {
-
-            // Step 1: hatch the egg you're standing on (if any)
+    public void eggTrailToNest() {
+        while (!onNest()) {
             if (onEgg()) {
                 hatchEgg();
             }
+            
+            if (nestAhead()) {
+            move();
+            return;
+            }
+            
+            followEggTrail();
+        }
+    }  
+    
+    public boolean wallOnRight() {
+        turnRight();
+        boolean wall = fenceAhead() || borderAhead();
+        turnLeft();
+        return wall;
+    }
 
-            // Step 2: follow the trail until nest is reached
-            while (!onNest()) {
-                // Look for next egg
-                if (eggInFront()) {
-                    move();
-                }
-                else if (eggToLeft()) {
-                    turnLeft();
-                    move();
-                }
-                else if (eggToRight()) {
-                    turnRight();
-                    move();
-                }
+    public boolean wallOnLeft() {
+        turnLeft();
+        boolean wall = fenceAhead() || borderAhead();
+        turnRight();
+        return wall;
+    }
+
+    public boolean canMoveRight() {
+        turnRight();
+        boolean can = canMove();
+        turnLeft();
+        return can;
+    }
+
+    public boolean canMoveLeft() {
+        turnLeft();
+        boolean can = canMove();
+        turnRight();
+        return can;
+    }
+
+    public void walkMazeToNest() {
+        // Pre: start in the only possible direction
+        while (!onNest()) {
+            // 1. If there is no wall on the right and we can move there: turn right and go
+            if (!wallOnRight() && canMoveRight()) {
+                turnRight();
+                move();
+            }
+                // 2. Else if we can move forward: go straight
+            else if (canMove()) {
+                move();
+            }
+                // 3. Else if we can move left: turn left and go
+            else if (canMoveLeft()) {
+                turnLeft();
+                move();
+            }
+                // 4. Else: turn around (should not really happen with given constraints)
                 else {
-                    showError("Trail broken — no egg found!");
-                    return;
-                }
-
-                // Hatch egg after moving
-                if (onEgg()) {
-                    hatchEgg();
-                }
+                turn180();
             }
+        }
 
-            // Step 3: final action when nest is reached
-            if (canLayEgg()) {
-                layEgg();
-            }
+        // At nest: lay egg if possible
+        if (canLayEgg()) {
+            layEgg();
+        } else {
+            showError("There is already an egg in this nest");
+        }
     }
 }
