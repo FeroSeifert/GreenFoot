@@ -86,10 +86,10 @@ public class MyDodo extends Dodo
      * @param   int distance: the number of steps made
      */
     public void jump( int distance ) {
-        int nrStepsTaken = 0;               // set counter to 0
-        while ( nrStepsTaken < distance ) { // check if more steps must be taken  
-            move();                         // take a step
-            nrStepsTaken++;                 // increment the counter
+        int nrStepsTaken = 0;               
+        while ( nrStepsTaken < distance ) { 
+            move();                        
+            nrStepsTaken++;                 
             System.out.println("moved " + nrStepsTaken);
         }
     }
@@ -99,7 +99,6 @@ public class MyDodo extends Dodo
      * 
      * <p> Initial: Dodo is on West side of world facing East.
      * <p> Final:   Dodo is on East side of world facing East.
-     *              Coordinates of each cell printed in the console.
      */
 
     public void walkToWorldEdge( ){
@@ -190,7 +189,7 @@ public class MyDodo extends Dodo
     }
     
     /**
-     * 
+     * Goes back to the start of the row and faces back
      */
     
     public void goBackToStartOfRowAndFaceBack() {
@@ -198,6 +197,10 @@ public class MyDodo extends Dodo
         walkToWorldEdge();
         turn180();
     }
+    
+    /**
+     * Walks to the worlds edge while also climbing over fences that are in the way
+     */
     
     public void walkToWorldEdgeClimbingOverFences() {
         while (!borderAhead()) {
@@ -209,6 +212,10 @@ public class MyDodo extends Dodo
         }
     }
     
+    /**
+     * Picks up all the all the grains to world edge and prints the coordinates in console
+     */
+    
     public void pickUpGrainsAndPrintCoordinates() {
         if (onGrain()) {
             System.out.println("Grain at: (" + getX() + ", " + getY() + ")");
@@ -218,11 +225,15 @@ public class MyDodo extends Dodo
         while (!borderAhead()) {
             move();
             if (onGrain()) {
-            System.out.println("Grain at: (" + getX() + ", " + getY() + ")");
-            pickUpGrain();
+                System.out.println("Grain at: (" + getX() + ", " + getY() + ")");
+                pickUpGrain();
             }
         }
     }
+    
+    /**
+     * Fill all empty nests with an egg till world edge
+     */
     
     public void fillEmptyNestToWorldEdge() {
         while (!borderAhead()) {
@@ -238,26 +249,34 @@ public class MyDodo extends Dodo
         }
     }
     
+    /**
+     * Walks to nest in a straight line climbing over fences
+     */
+    
     public void walkToNestClimbingOverFences() {
         while (!onNest()) {
             if (borderAhead()) {
-            showError("No nest found before world edge!");
-            return;
+                showError("No nest found before world edge!");
+                return;
             }
 
             if (fenceAhead()) {
-            climbOverFence();
+                climbOverFence();
             } else {
-            move();
+                move();
             }
         }
 
         if (canLayEgg()) {
-        layEgg();
+            layEgg();
         } else {
-        showError("There is already an egg in this nest");
+            showError("There is already an egg in this nest");
         }
     }
+    
+    /**
+     * walks around a fenced area 
+     */
     
     public void walkAroundFencedArea() {
         while (!onEgg()) {
@@ -268,7 +287,7 @@ public class MyDodo extends Dodo
                 continue;
             }
                 
-            turnLeft();
+            turnLeft();   
             
             if (canMove()) {
                 move();
@@ -277,5 +296,93 @@ public class MyDodo extends Dodo
                 
             turnLeft();
         }
+    }
+    
+    /**
+     * helper for eggTrailToNest
+     */
+    
+        public boolean eggInFront() {
+            return eggAhead();
+    }
+
+    /**
+     * helper for eggTrailToNest
+     */
+    
+        public boolean eggToLeft() {
+            turnLeft();
+            boolean found = eggAhead();
+            turnRight();
+            return found;
+    }
+
+    /**
+     * helper for eggTrailToNest
+     */
+    
+        public boolean eggToRight() {
+            turnRight();
+            boolean found = eggAhead();
+            turnLeft();
+            return found;
+    }
+
+    /**
+     * helper for eggTrailToNest
+     */
+    
+        public boolean eggAhead() {
+            if (!canMove()) return false;
+
+            move();
+            boolean found = onEgg();
+            turn180();
+            move();
+            turn180();
+
+            return found;
+    }
+
+    /**
+     * Follows an egg trail till theres a nest
+     */
+    
+        public void eggTrailToNest() {
+
+            // Step 1: hatch the egg you're standing on (if any)
+            if (onEgg()) {
+                hatchEgg();
+            }
+
+            // Step 2: follow the trail until nest is reached
+            while (!onNest()) {
+                // Look for next egg
+                if (eggInFront()) {
+                    move();
+                }
+                else if (eggToLeft()) {
+                    turnLeft();
+                    move();
+                }
+                else if (eggToRight()) {
+                    turnRight();
+                    move();
+                }
+                else {
+                    showError("Trail broken — no egg found!");
+                    return;
+                }
+
+                // Hatch egg after moving
+                if (onEgg()) {
+                    hatchEgg();
+                }
+            }
+
+            // Step 3: final action when nest is reached
+            if (canLayEgg()) {
+                layEgg();
+            }
     }
 }
