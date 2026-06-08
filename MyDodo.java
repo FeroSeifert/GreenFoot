@@ -562,7 +562,7 @@ public class MyDodo extends Dodo
             count++;
         }
 
-        // Loop tot wereldrand
+        // Loop naar de rand van de wereld
         while (!borderAhead()) {
             move();
 
@@ -575,5 +575,42 @@ public class MyDodo extends Dodo
         goBackToStartOfRowAndFaceBack();
 
         return count;
+    }
+    
+    public int countAllEggs() {
+        int total = 0;
+
+        int worldWidth = getWorld().getWidth();
+        int worldHeight = getWorld().getHeight();
+
+        // Beginpositie opslaan
+        int startX = getX();
+        int startY = getY();
+
+        // Loop door alle rijen (y = 0 t/m height-1)
+        for (int row = 0; row < worldHeight; row++) {
+
+            // Ga naar het begin van de rij (kolom 0)
+            goToLocation(0, row);
+
+            // Zorg dat Dodo naar rechts kijkt
+            faceEast();
+
+            // Tel eieren in deze rij
+            int eggsInRow = countEggsInRow();
+
+            // Voeg toe aan totaal
+            total += eggsInRow;
+
+            System.out.println("Rij " + row + ": " + eggsInRow + " eieren");
+        }
+
+        // Ga terug naar startpositie
+        goToLocation(startX, startY);
+        
+        faceEast();
+
+        System.out.println("Totaal aantal eieren: " + total);
+        return total;
     }
 }
