@@ -613,4 +613,76 @@ public class MyDodo extends Dodo
         System.out.println("Totaal aantal eieren: " + total);
         return total;
     }
+    
+    public int findRowWithMostEggs() {
+        int worldHeight = getWorld().getHeight();
+
+        int startX = getX();
+        int startY = getY();
+
+        int maxEggs = -1;
+        int rowWithMostEggs = -1;
+
+        for (int row = 0; row < worldHeight; row++) {
+
+            // Ga naar begin van de rij
+            goToLocation(0, row);
+            faceEast();
+
+            // Tel eieren in deze rij
+            int eggs = countEggsInRow();
+
+            System.out.println("Rij " + (row + 1) + " heeft " + eggs + " eieren");
+
+            // Check of dit de nieuwe max rij is
+            if (eggs > maxEggs) {
+                maxEggs = eggs;
+                rowWithMostEggs = row;
+            }
+        }
+
+        // Terug naar startpositie
+        goToLocation(startX, startY);
+
+        System.out.println("Rij met de meeste eieren: " + (rowWithMostEggs + 1) + " (aantal: " + maxEggs + ")");
+
+        return rowWithMostEggs + 1;
+    }
+
+    public void buildEggMonumentTriangle() {
+        int worldWidth = getWorld().getWidth();
+        int worldHeight = getWorld().getHeight();
+
+        int startX = getX();
+        int startY = getY();
+
+        int rowIndex = 0;
+        
+        while (startY + rowIndex < worldHeight) {
+
+            int eggsToLay = rowIndex + 1;
+            int maxEggsInRow = worldWidth - startX;
+
+            if (eggsToLay > maxEggsInRow) {
+                eggsToLay = maxEggsInRow; // afkappen als we tegen de rand komen
+            }
+
+            // Leg eieren naast elkaar in deze rij
+            for (int colOffset = 0; colOffset < eggsToLay; colOffset++) {
+                int x = startX + colOffset;
+                int y = startY + rowIndex;
+
+                goToLocation(x, y);
+
+                if (canLayEgg()) {
+                    layEgg();
+                }
+            }
+
+            rowIndex++;
+        }
+
+        // Terug naar startpositie
+        goToLocation(startX, startY);
+    }
 }
