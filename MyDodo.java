@@ -557,12 +557,10 @@ public class MyDodo extends Dodo
     public int countEggsInRow() {
         int count = 0;
 
-        // Tel ei op startpositie
         if (onEgg()) {
             count++;
         }
 
-        // Loop naar de rand van de wereld
         while (!borderAhead()) {
             move();
 
@@ -571,7 +569,6 @@ public class MyDodo extends Dodo
             }
         }
 
-        // Ga terug naar startpositie
         goBackToStartOfRowAndFaceBack();
 
         return count;
@@ -583,29 +580,22 @@ public class MyDodo extends Dodo
         int worldWidth = getWorld().getWidth();
         int worldHeight = getWorld().getHeight();
 
-        // Beginpositie opslaan
         int startX = getX();
         int startY = getY();
 
-        // Loop door alle rijen (y = 0 t/m height-1)
         for (int row = 0; row < worldHeight; row++) {
 
-            // Ga naar het begin van de rij (kolom 0)
             goToLocation(0, row);
 
-            // Zorg dat Dodo naar rechts kijkt
             faceEast();
 
-            // Tel eieren in deze rij
             int eggsInRow = countEggsInRow();
 
-            // Voeg toe aan totaal
             total += eggsInRow;
 
             System.out.println("Rij " + row + ": " + eggsInRow + " eieren");
         }
 
-        // Ga terug naar startpositie
         goToLocation(startX, startY);
         
         faceEast();
@@ -625,23 +615,19 @@ public class MyDodo extends Dodo
 
         for (int row = 0; row < worldHeight; row++) {
 
-            // Ga naar begin van de rij
             goToLocation(0, row);
             faceEast();
 
-            // Tel eieren in deze rij
             int eggs = countEggsInRow();
 
             System.out.println("Rij " + (row + 1) + " heeft " + eggs + " eieren");
 
-            // Check of dit de nieuwe max rij is
             if (eggs > maxEggs) {
                 maxEggs = eggs;
                 rowWithMostEggs = row;
             }
         }
 
-        // Terug naar startpositie
         goToLocation(startX, startY);
 
         System.out.println("Rij met de meeste eieren: " + (rowWithMostEggs + 1) + " (aantal: " + maxEggs + ")");
@@ -664,10 +650,9 @@ public class MyDodo extends Dodo
             int maxEggsInRow = worldWidth - startX;
 
             if (eggsToLay > maxEggsInRow) {
-                eggsToLay = maxEggsInRow; // afkappen als we tegen de rand komen
+                eggsToLay = maxEggsInRow;
             }
 
-            // Leg eieren naast elkaar in deze rij
             for (int colOffset = 0; colOffset < eggsToLay; colOffset++) {
                 int x = startX + colOffset;
                 int y = startY + rowIndex;
@@ -681,8 +666,62 @@ public class MyDodo extends Dodo
 
             rowIndex++;
         }
-
-        // Terug naar startpositie
+        
         goToLocation(startX, startY);
+    }
+
+    public void buildPyramid() {
+
+        int startX = getX();
+        int startY = getY();
+
+        int worldWidth = getWorld().getWidth();
+        int worldHeight = getWorld().getHeight();
+
+        buildEggMonumentTriangle();
+    
+        int row = 0;
+
+        while (startY + row < worldHeight) {
+
+            int eggsInRow = row + 1;
+            int y = startY + row;
+
+            int leftStart = startX - (eggsInRow - 1);
+
+            if (leftStart >= 0) {
+                for (int i = 0; i < eggsInRow; i++) {
+                    int x = startX - i;
+                    goToLocation(x, y);
+                    if (canLayEgg()) layEgg();
+                }
+            } else {
+                
+                int actualEggs = Math.min(eggsInRow, worldWidth);
+                
+                for (int i = 0; i < actualEggs; i++) {
+                    int x = i; // vanaf kolom 0
+                    goToLocation(x, y);
+                    if (canLayEgg()) layEgg();
+                }
+            }
+
+            row++;
+        }
+
+        goToLocation(startX, startY);
+        faceEast();
+    }
+    
+    public double averageEggsPerRow() {
+
+        int totalEggs = countAllEggs();  
+        int numberOfRows = getWorld().getHeight();
+
+        double average = (double) totalEggs / numberOfRows;
+
+        System.out.println("Gemiddeld aantal eieren per rij: " + average);
+
+        return average;
     }
 }
